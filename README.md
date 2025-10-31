@@ -22,6 +22,13 @@ A personal website to share background, interests, and highlighted projects in a
 - Use GitHub Pages for hosting (already configured via repository).
 - Consider lightweight build tooling (Vite) if component reuse or bundling becomes useful.
 
+## Visual Style Direction
+- **Palette:** Soft neutral background with bright coral accent (`#ff715b`) for CTAs and highlights.
+- **Typography:** `Inter` for readable, modern sans-serif across headings and body text.
+- **Layout:** Centered content width (≈1080px), generous padding, rounded cards with subtle shadows.
+- **Navigation:** Sticky top bar with brand lockup and anchors to scrollable sections.
+- **Tone:** Clean, approachable, slightly editorial to balance professionalism with personality.
+
 ## Action Plan
 1. **Discovery & Content Audit:** Gather resume, portfolio pieces, writing samples, media assets.
 2. **Visual Direction:** Moodboard references, pick color palette, typography (Google Fonts).
