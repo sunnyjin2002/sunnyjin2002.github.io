@@ -1,0 +1,418 @@
+---
+title: 'Analysis of Ontario Land Ambulance Response Time Since 2015: it''s Relationship
+  with Population, Land Area, and Population Density'
+author: "Sunny Jin_1006806306 & Zhongbin Qian_1008460826"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+editor_options:
+  markdown:
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width = 10, fig.height = 5)
+```
+
+```{r cleaning-data, echo=FALSE, results='hide'}
+library(tidyverse)
+library(lubridate)
+#Read in "csv file", that really uses "|" as separator
+data <-  
+  read.table("population_estimates_land_area_population_density_and_average_response_times.csv", 
+             sep = "|", header = TRUE)
+
+#remove if any data is "No data available", "TBD", or "See Thunder Bay (City)"
+data = data[which(data$Average.Response.Time != "No data available" &
+                    data$Average.Response.Time != "TBD" &
+                    data$Average.Response.Time != "See Thunder Bay (City)"), ]
+#converting types
+data2 = transform(data,
+         Population.Estimate = as.numeric(gsub(",", "", data$Population.Estimate)),
+         Land.Area..km2. = as.numeric(gsub(",", "", data$Land.Area..km2.)),
+         Population.Density..Per.km2. = 
+           as.numeric(gsub(",", "", data$Population.Density..Per.km2.)),
+         Average.Response.Time = as.duration(Average.Response.Time))
+
+#The reason for removing the county Prince Edward is that it's population 
+#strangely changed from 25k to 98k suddenly in 2022, with no supporting evidence
+#that can be found online.
+data2 = data2[which(data2$Ambulance.Service.Coverage.Area != "Prince Edward"), ]
+#The reason for removing the city of Kenora is that the land area of "406834 km^2"
+# is a big outlier, and does not match the area of 210.9 km^2 found online.
+# Other data of Kenora, like the population is also errounous.
+data2 = data2[which(data2$Ambulance.Service.Coverage.Area != "Kenora"), ]
+#The city of Cochrane is removed for the same reason as Kenora.
+data2 = data2[which(data2$Ambulance.Service.Coverage.Area != "Cochrane"), ]
+#
+```
+
+# 1. Description of the Dataset
+
+```{r description, echo=FALSE}
+glimpse(data2)
+```
+
+1.  Ambulance.Service.Coverage.Area: The Ontario city/area of which the record is from.
+2.  Reporting.Year: The year of the record.
+3.  Population.Estimate: The estimated population of the city/area, provided by Statistics Canada.
+4.  Land.Area..km2.: The land area of the city/area, in squared kilometers.
+5.  Population.Density..Per.km2: Population density of the city/area of the record, obtainable by dividing Population.Estimate by Land.Area..km2.
+6.  Average.Response.Time: The average response time of an ambulance from when it is assigned in response to a 9-1-1 call to when it arrives on scene for highest priority calls, measured in seconds.
+
+# 2. The Background of the Data
+
+The Land Ambulance Response Times data was collected by the province of Ontario, recording the average response time of a Central Ambulance Communication Centre (CACC) by reporting year.
+This data is collected as part of measuring the performance of land ambulances by the Emergency Health Regulatory and Accountability Branch of the Ministry of Health and Long-Term Care.
+The data collected also includes additional information on the CACC, specifically the Estimated Population of the area supported by that CACC, the land area of the region (in km$^2$), and population density.
+This data has being collected since 2015, and is publicly available through Ontario's Data Catalogue for higher transparency and accountability, as well as research and analysis purposes.
+
+**The data can be used for analysis into the performance of land ambulance in Ontario.The results can impact researchers and policymakers in evaluating whether a CACC is performing well, and whether extra resources are needed to improve the performances.**
+
+# 3. What are the Research Questions?
+
+As researchers, our overall research question is to find the factors influencing the ambulance average response time of a CACC.
+The aim is to analyze whether factors like land area, population, and population density has on the ambulance average response time of a CACC.
+We are also interested in seeing how changes in these factors impact the ambulance average response time of the same CACC.
+Specifically, our research questions are:
+
+1.  How has average response time changed between 2016 and 2023?
+
+2.  How does land area impact the average response time?
+
+3.  How does population impact the average response time?
+
+4.  How does the average response time change, for regions with a high population growth rate?
+
+5.  How does population density per km$^2$ impact the average response time?
+
+# 4. Tables
+
+## 4.1 Top 10 Cities with Highest Population Growth Rate from 2016 to 2023.
+
+```{r table, echo=FALSE}
+d3 = data2 %>% filter(Reporting.Year == 2023 | Reporting.Year == 2015)
+
+d2.wide = data2 %>% pivot_wider(id_cols = Ambulance.Service.Coverage.Area,
+                             names_from = Reporting.Year,
+                             names_prefix = "Year_",
+                             values_from = Population.Estimate)
+d2.wide = d2.wide %>% 
+  mutate(population_growth_rate = ((Year_2023 - Year_2016)/ Year_2016))
+
+d2.wide = d2.wide %>% filter(population_growth_rate != 'NA') %>% 
+  select(Ambulance.Service.Coverage.Area, Year_2023, Year_2016, 
+         population_growth_rate)
+
+d2.wide2 = data2 %>% pivot_wider(id_cols = Ambulance.Service.Coverage.Area,
+                             names_from = Reporting.Year,
+                             names_prefix = "Year_",
+                             values_from = Average.Response.Time)
+
+data3 = d2.wide[which(d2.wide$population_growth_rate>0.0827), ]
+data3 = data3%>%arrange(desc(population_growth_rate))
+data3
+```
+
+This table somewhat reveals the popularity of cities in Ontario with biggest population growth rates.
+
+## 4.2 Average Response Time for Cities with High Population Growth Rate vs. Other Cities
+
+Our research question 4 wonders if cities with high population growth rate might have different average response times compared to other cities.
+
+H0: The 10 cities with highest population growth have the **same** average response time as the remaining cities.
+
+H1: The 10 cities with highest population growth **does not have the same** average response time as the remaining cities.
+
+```{r table2, echo=FALSE}
+index = which(data2$Ambulance.Service.Coverage.Area == "Haldimand" |
+                data2$Ambulance.Service.Coverage.Area == "Waterloo" |
+                data2$Ambulance.Service.Coverage.Area == "Oxford" |
+                data2$Ambulance.Service.Coverage.Area == "Simcoe" |
+                data2$Ambulance.Service.Coverage.Area == "Lanark" |
+                data2$Ambulance.Service.Coverage.Area == "Bruce" |
+                data2$Ambulance.Service.Coverage.Area == "Wellington" |
+                data2$Ambulance.Service.Coverage.Area == "Haliburton" |
+                data2$Ambulance.Service.Coverage.Area == "Muskoka" |
+                data2$Ambulance.Service.Coverage.Area == "Ottawa") 
+data_temp = data2 %>% mutate(First10 = 0)
+data_temp[index, grep("First10", colnames(data_temp))] = 1
+t.test(data_temp[which(data_temp$First10 == 0), "Average.Response.Time"], 
+       data_temp[which(data_temp$First10 == 1), "Average.Response.Time"],
+       alternative = "two.sided", var.equal = FALSE)
+#data_temp %>% group_by(First10) %>% 
+#  summarize(meanAvgResponseTime = mean(Average.Response.Time))
+```
+
+By the two sample t-test, p-value = 0.01026 is less than 0.05, so we reject H0.
+Thus, the 10 cities with highest population growth rate has a longer average ambulance response time than the remaining cities.
+
+# 5. Confidence Interval
+
+```{r conf, echo=FALSE}
+t.test(d2.wide%>%select(population_growth_rate))
+```
+
+By the t-test, We are 95% confident that the population growth rate is between (0.01217, 0.06566).
+
+# 6. Graphs
+
+## 6.1 Scatter plot and correlation line of all Average Response Time by Population Density
+
+```{r graph-1, echo=FALSE}
+ggplot( data2 , aes(x = Population.Density..Per.km2., y = Average.Response.Time ))+
+geom_smooth(method="lm")+
+geom_point(aes(col=Population.Density..Per.km2.))+
+xlab("population density per km")+
+ylab("Average Response Time(s)")+ ggtitle("Scatterplot and correlation line of all Average Response Time by Population Density")
+```
+
+Including all data from the given data source, we can see **there is a slight inverse proportion between population density and average response time** by the correlation line shown, which means if population density goes up, the average response time slightly go down.
+
+However, there are some outliers with a large population, and relatively lower response time.
+Notably, the 7 point with the huge population belongs to Toronto, the most populated city of Ontario.
+
+To determine whether the trend remains true without the outliers, we check the relationship when population density per km$^2$ is less than 100:
+
+```{r graph-2, echo=FALSE}
+d = data2 %>% filter(Population.Density..Per.km2.<1000)
+d2 = data2 %>% filter(Population.Density..Per.km2.<100)
+```
+
+```{r graph-4, echo=FALSE}
+ggplot(d2 , aes(x = Population.Density..Per.km2., y = Average.Response.Time)) +
+  geom_smooth(method="lm")+
+  geom_point(aes(col=Population.Density..Per.km2.))+
+  xlab("population density per km")+
+  ylab("Average Response Time(s)")+
+  ggtitle("Scatterplot and correlation line of all Average Response Time by Population Density (<100perkm)")
+```
+
+There is still a **negative relationship** as the correlations lines show in the graphs.
+If we enlarge the graph by restrict population density to 100 per km$^2$, which most cities have, we can see there is a more obvious negative correlation.
+
+## 6.2 Line chart of the change of proportion of Average Response Time and Average Population from 2015 to 2021
+
+```{r chart-1, echo=FALSE}
+library(lubridate)
+
+sum_table = data2 %>% group_by(Reporting.Year) %>%
+  summarize(N = n(), Avg_Response_Time = mean(Average.Response.Time),
+            Avg_Population = mean(Population.Estimate))
+sum_table
+
+#Remove data for 2022 and 2023, due to a decrease in population caused by 
+#lacking data from Toronto and Peel - the regions with most population.
+data_temp = data2 %>% 
+  filter(Reporting.Year != 2022 & Reporting.Year != 2023)
+
+sum_table2 = data_temp %>% group_by(Reporting.Year) %>% 
+  summarize(N = n(), Avg_Response_Time = mean(Average.Response.Time),
+            Avg_Population = mean(Population.Estimate))
+
+ggplot(data=sum_table2, 
+       aes(y=Avg_Response_Time, x=Avg_Population)) + geom_line() + 
+  ggtitle("Line chart of the change of proportion of Average Response Time and Average Population from 2015 to 2021")
+```
+
+Here is the line chart and table shows change of proportion of Average Response Time and Average Population from 2015 to 2021.
+Due to the lacking of some data for the years 2022 and 2023 (resulting to a much lower average population), We removed the data of 2022 and 2023 for line chart.
+
+As the line chart demonstrates, **there is a positive proportion between the Average Response Time and Average Population as the population goes higher, the higher response time it needs**.
+
+## 6.3 Relationship between Average Response Time and Land Area in km$^2$
+
+We are also interested in whether a larger land area influence the average response time.
+
+```{r graph-time-km2, echo=FALSE}
+ggplot(data2, aes(y=Average.Response.Time, x=Land.Area..km2.)) + 
+  geom_point() +
+  geom_smooth(method="lm")+
+  xlab("Land Area in km^2") +
+  ylab("Average Response Time") +
+  ggtitle("Linear Function of All Average Response Time and Land Area")
+```
+
+As expected, as land area of a CACC's jurisdiction increases, the average response time also increases, demonstrating a **positive** relationship.
+
+## 6.4 Relationship between Average Response Time and Population
+
+Another question to consider is how a larger population might affect the average response time.
+
+```{r graph-time-pop, echo=FALSE}
+ggplot(data2, aes(y=Average.Response.Time, x=Population.Estimate)) + 
+  geom_point() +
+  geom_smooth(method="lm")+
+  xlab("Estimated Populaiton") +
+  ylab("Average Response Time") +
+  ggtitle("Linear Function of All Average Response Time and Population")
+```
+
+According to the graph, it appears that population and average response time has an **inverse** relationship.
+In other words, as population of an area increases, the average response time decreases.
+
+```{r graph-time-pop2, echo=FALSE}
+data_pop_less = data2 %>% filter(Population.Estimate < 1500000)
+ggplot(data_pop_less, aes(y=Average.Response.Time, x=Population.Estimate)) + 
+  geom_point() +
+  geom_smooth(method="lm")+
+  xlab("Estimated Populaiton") +
+  ylab("Average Response Time") +
+  ggtitle("Linear Function of All Average Response Time and Population - Population less than 150k")
+```
+
+After excluding outliers with extremely large population, the inverse trend remains, confirming that **population and average response time has an inverse relationship**.
+
+# 7. Hypothesis Testing
+
+We would like to determine if there exists a difference in the mean of average ambulance response times in 2023 and 2016.
+
+Hypothesis:
+
+H0: The average response time in 2023 is equal to the average response time in 2016.
+
+H1: The average response time in 2023 is not equal to the average response time in 2016.
+
+```{r hypo, echo=FALSE}
+t.test(d2.wide2%>%select(Year_2023), d2.wide2%>%select(Year_2016), alternative = "two.sided",
+  conf.level = 0.95, var.equal=TRUE)
+```
+
+The Two Sample t-test shows a significant difference between the mean of ambulance response times of 2023 and 2016.
+The p-value ($1.225 * 10^{-6}$) is less than the significance level of 0.05, indicating strong evidence against the null hypothesis of no difference.
+The confidence interval (549.4600, 442.2222) also does not include 0, further supporting the conclusion that there is a significant difference between the two groups.
+Therefore, we can conclude that there is a significant difference in between the mean of ambulance response times of 2023 and 2016.
+Specifically, the mean of response time of 2023 (549 seconds) is longer than that in 2016 (442.2222 seconds).
+
+# 8. Bootstrapping
+
+We could use bootstrapping to estimate the sampling distribution of the mean of areas under 20,000 km$^2$ and compute a confidence interval.
+
+```{r bootstrap, echo=FALSE}
+set.seed(12345)
+boot_function=function(x){
+  boot_s = sample(x, size=30, replace=TRUE)
+  return(mean(boot_s))
+}
+
+area_under20k <- data2[which(data2$Land.Area..km2. < 20000), ]
+
+bootstrapped_response_time_area_under_20k = 
+  replicate(100000, boot_function(area_under20k$Average.Response.Time))
+```
+
+```{r bootstrap-results, echo=FALSE}
+#hist(bootstrapped_response_time_area_under_20k)
+print(paste0("Mean average response time: ", 
+             mean(bootstrapped_response_time_area_under_20k)))
+t.test(bootstrapped_response_time_area_under_20k)
+```
+
+The bootstrapping results show that the mean of average response time is 479.64 seconds, or 7 minutes 59.64 seconds.
+The 95% confidence interval is (479.52, 479.76) seconds, indicating that we are 95% confident that the true mean of the land ambulance average response time falls within this range.
+
+# 9. Building a Model: Linear Regression and Random Forest
+
+The model building uses data from 2016 to 2022, leaving out the data from 2023 to be used as testing dataset.
+
+## 9.1 Linear Regression
+
+```{r linear-reg, echo=FALSE}
+#Training data is all data from 2016 to 2022, and 
+#Testing data is data from 2023.
+train_data <- data2 %>% filter(Reporting.Year != 2023)
+test_data <- data2 %>% filter(Reporting.Year == 2023)
+
+#Change the year from starting 2015 to starting "0"
+train_data2 = train_data %>% mutate(year = Reporting.Year - 2015)
+test_data2 = test_data %>% mutate(year = Reporting.Year - 2015)
+
+model1 <- lm(Average.Response.Time ~ year + 
+              Population.Estimate + Land.Area..km2. + 
+               Population.Density..Per.km2., data = train_data2)
+summary(model1)
+```
+
+### 9.1.1 Explanation
+
+The linear regression model suggests that there is significant relationship between the variables and the average response time.
+From the p-values of the variables, each p-value is less than 0.05, so we reject the null hypothesis that these variables all have relationships with the average response time.
+The coefficient of determination ($R^2$) of 0.205indicates that only 20.5% of the variation in the data is explained.
+Since this is quite low, it indicated that there are still important variables that's not included in the dataset.
+
+### 9.1.2 Interpreting the Regression Parameters
+
+-   The intercept coefficient of 428.3 indicates that when all other variables are held constant at 0, the expected average response time is 428.3 seconds.
+-   The coefficient for year is 1.685. The positive coefficient and extremely small p-value ($4.03 * 10^{-14}$) indicates that "year" is an important factor, and that with the increase of 1 year, the expected average response time is expected to increase by 1.685 seconds.
+-   The coefficient for Population.Estimate is $-9.895 * 10^{-5}$ indicates that as population increases by 1 unit, the average response time is expected to decrease by $9.895 * 10^{-5}$ seconds. In more familiar units, if population increase by 100,000 people, then the average response time is expected to decrease by 9.895 seconds.
+-   The coefficient for Land.Area..km2. is $1.377 * 10^{-3}$, indicating that as the land area for a given CACC increases by 1 km$^2$, then the average response time is expected to increase by $1.377 * 10^{-3}$ seconds.
+-   The coefficient for Population.Density..Per.km2 is $4.218 * 10^{-2}$, indicating that as the population density per km$^2$ increases by 1 unit, the average response time is expected to increase by $4.218 * 10^{-2}$ seconds.
+
+## 9.2 Decision Tree
+
+```{r dec-tree, echo=FALSE}
+library(rpart)
+library(rattle)
+tree = rpart(Average.Response.Time ~ Reporting.Year + 
+              Population.Estimate + Land.Area..km2. + 
+               Population.Density..Per.km2., 
+              data = train_data2)
+```
+
+```{r dec-tree-result, echo=FALSE}
+fancyRpartPlot(tree)
+```
+
+This decision tree gives some interesting results.
+For example, in layer 2, both subtrees used the criteria "Reporting.Year \< 2021", indicating that there may be some changes to the pattern of average response time since the year 2021.
+
+# 10. Cross Validation
+
+To see which model does a better job at predicting the average land ambulance response time, we can use cross-validation to calculate the mean squared error of each model.
+The idea is to split the dataset into 2 parts: the training part, consisting of all the data except those for the reporting year 2023; and the testing part, consisting only of data from the year 2023.
+
+## 10.1 Cross Validation for linear regression model
+
+```{r cv-1, echo=FALSE}
+est_time_train = predict(model1)
+mse_train = mean((train_data2$Average.Response.Time - est_time_train)^2)
+
+est_time_test = predict(model1, newdata = test_data2)
+mse_test = mean((test_data2$Average.Response.Time - est_time_test)^2)
+
+print(paste0("The MSE for training data(data from 2016 to 2022) is : ", mse_train))
+print(paste0("The MSE for testing data(data from 2023) is: ", mse_test))
+```
+
+## 10.2 Cross Validation for decision tree model
+
+```{r cv-2, echo=FALSE}
+est_time_train2 = predict(tree)
+mse_train2 = mean((train_data$Average.Response.Time - est_time_train2)^2)
+
+est_time_test2 = predict(tree, newdata = test_data)
+mse_test2 = mean((test_data$Average.Response.Time - est_time_test2)^2)
+
+print(paste0("The MSE for training data(data from 2016 to 2022) is : ", mse_train2))
+print(paste0("The MSE for testing data(data from 2023) is: ", mse_test2))
+```
+
+## 10.3 Cross Validation Results
+
+The MSE for decision tree model is significantly lower than that of the linear regression model, indicating that the decision tree model is better at predicting the land ambulance average response time of a CACC.
+
+# 11. Summary of Research
+
+Based on the results presented in his report, we can now make a conclusion to the research questions:
+
+1.  The mean of average response time of 2023 is longer than that in 2016.
+2.  As land area under the jurisdiction of a CACC increases, the average response time tends to increase as well.
+3.  As population of an area increases, the average response time is expected to decrease.
+4.  Cities with higher population growth rates also have a higher land ambulance average response time.
+5.  As population density (per km$^2$) of an area increases, the average response time decreases.
+
+# Appendix: All Code Used In This Report
+
+```{r ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE}
+```
