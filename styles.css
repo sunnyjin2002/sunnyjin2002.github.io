@@ -363,7 +363,7 @@ main {
   text-decoration: underline;
 }
 
-.document-viewer iframe {
+.document-viewer object {
   display: block;
   width: 100%;
   min-height: 42rem;
@@ -372,12 +372,48 @@ main {
   background: #eef2f7;
 }
 
+.document-viewer object p {
+  margin: 0;
+  padding: 2rem;
+  color: var(--text-muted);
+}
+
+.document-viewer object a {
+  color: var(--accent-dark);
+  font-weight: 700;
+}
+
 .document-note {
   margin: 0;
   padding: 0.85rem 1.25rem 1rem;
   border-top: 1px solid var(--border);
   color: var(--text-muted);
   font-size: 0.9rem;
+}
+
+.download-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin-top: 2rem;
+}
+
+.download-list a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 113, 91, 0.35);
+  border-radius: 8px;
+  color: var(--accent-dark);
+  font-weight: 700;
+  padding: 0.7rem 1rem;
+  text-decoration: none;
+}
+
+.download-list a:hover,
+.download-list a:focus {
+  border-color: var(--accent);
+  background: #fff8f6;
 }
 
 .contact-list {
@@ -494,7 +530,7 @@ footer {
     flex-direction: column;
   }
 
-  .document-viewer iframe {
+  .document-viewer object {
     height: 32rem;
   }
 }
