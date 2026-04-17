@@ -45,14 +45,14 @@
             </button>
             <div class="filter-panel" id="project-filters" hidden>
               <button class="filter-option active" type="button" data-filter="all">All</button>
-              <button class="filter-option" type="button" data-filter="2020">2020</button>
-              <button class="filter-option" type="button" data-filter="2021">2021</button>
-              <button class="filter-option" type="button" data-filter="2023">2023</button>
-              <button class="filter-option" type="button" data-filter="2024">2024</button>
-              <button class="filter-option" type="button" data-filter="Machine Learning">Machine Learning</button>
-              <button class="filter-option" type="button" data-filter="AI Agents">AI Agents</button>
-              <button class="filter-option" type="button" data-filter="Web App">Web App</button>
-              <button class="filter-option" type="button" data-filter="Data Visualization">Data Visualization</button>
+              <button class="filter-option" type="button" data-filter="2020" aria-pressed="false">2020</button>
+              <button class="filter-option" type="button" data-filter="2021" aria-pressed="false">2021</button>
+              <button class="filter-option" type="button" data-filter="2023" aria-pressed="false">2023</button>
+              <button class="filter-option" type="button" data-filter="2024" aria-pressed="false">2024</button>
+              <button class="filter-option" type="button" data-filter="Machine Learning" aria-pressed="false">Machine Learning</button>
+              <button class="filter-option" type="button" data-filter="AI Agents" aria-pressed="false">AI Agents</button>
+              <button class="filter-option" type="button" data-filter="Web App" aria-pressed="false">Web App</button>
+              <button class="filter-option" type="button" data-filter="Data Visualization" aria-pressed="false">Data Visualization</button>
             </div>
           </div>
         </div>
@@ -122,6 +122,7 @@
     </main>
 
     <footer>
+      And Project 0 - This personal site!
       Site created using Codex. Last updated April 2026.
     </footer>
 
@@ -130,6 +131,7 @@
       const filterPanel = document.querySelector(".filter-panel");
       const filterOptions = document.querySelectorAll(".filter-option");
       const projectCards = document.querySelectorAll(".project-card");
+      const allFilter = document.querySelector('[data-filter="all"]');
 
       filterToggle.addEventListener("click", () => {
         const isOpen = filterToggle.getAttribute("aria-expanded") === "true";
@@ -137,17 +139,39 @@
         filterPanel.hidden = isOpen;
       });
 
+      function getSelectedTags() {
+        return Array.from(filterOptions)
+          .filter((option) => option.dataset.filter !== "all" && option.classList.contains("active"))
+          .map((option) => option.dataset.filter);
+      }
+
+      function updateProjects() {
+        const selectedTags = getSelectedTags();
+
+        allFilter.classList.toggle("active", selectedTags.length === 0);
+
+        projectCards.forEach((card) => {
+          const cardTags = card.dataset.tags;
+          const matches = selectedTags.every((tag) => cardTags.includes(tag));
+          card.hidden = selectedTags.length > 0 && !matches;
+        });
+      }
+
       filterOptions.forEach((option) => {
         option.addEventListener("click", () => {
           const selectedTag = option.dataset.filter;
 
-          filterOptions.forEach((item) => item.classList.remove("active"));
-          option.classList.add("active");
+          if (selectedTag === "all") {
+            filterOptions.forEach((item) => {
+              item.classList.remove("active");
+              item.setAttribute("aria-pressed", "false");
+            });
+          } else {
+            option.classList.toggle("active");
+            option.setAttribute("aria-pressed", String(option.classList.contains("active")));
+          }
 
-          projectCards.forEach((card) => {
-            const matches = selectedTag === "all" || card.dataset.tags.includes(selectedTag);
-            card.hidden = !matches;
-          });
+          updateProjects();
         });
       });
     </script>
