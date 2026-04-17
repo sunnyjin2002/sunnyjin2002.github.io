@@ -322,6 +322,10 @@ main {
   color: var(--text-muted);
 }
 
+.project-detail {
+  width: min(100%, 1080px);
+}
+
 .document-list {
   display: grid;
   gap: 2rem;
@@ -363,24 +367,14 @@ main {
   text-decoration: underline;
 }
 
-.document-viewer object {
+.document-viewer iframe {
   display: block;
   width: 100%;
+  max-width: none;
   min-height: 42rem;
   height: min(78vh, 54rem);
   border: 0;
   background: #eef2f7;
-}
-
-.document-viewer object p {
-  margin: 0;
-  padding: 2rem;
-  color: var(--text-muted);
-}
-
-.document-viewer object a {
-  color: var(--accent-dark);
-  font-weight: 700;
 }
 
 .document-note {
@@ -392,9 +386,9 @@ main {
 }
 
 .download-list {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 0.9rem;
+  justify-items: start;
   margin-top: 2rem;
 }
 
@@ -530,7 +524,7 @@ footer {
     flex-direction: column;
   }
 
-  .document-viewer object {
+  .document-viewer iframe {
     height: 32rem;
   }
 }
