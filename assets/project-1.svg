@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-labelledby="title desc">
+  <title id="title">Project 1 placeholder image</title>
+  <desc id="desc">Abstract data visualization with bars and a trend line.</desc>
+  <rect width="960" height="600" fill="#f4f7fb"/>
+  <rect x="84" y="78" width="792" height="444" rx="28" fill="#ffffff"/>
+  <path d="M150 436h660" stroke="#dce3ee" stroke-width="8" stroke-linecap="round"/>
+  <rect x="176" y="290" width="74" height="146" rx="10" fill="#ff715b"/>
+  <rect x="290" y="218" width="74" height="218" rx="10" fill="#1c1f26"/>
+  <rect x="404" y="256" width="74" height="180" rx="10" fill="#ffb199"/>
+  <rect x="518" y="162" width="74" height="274" rx="10" fill="#5f6673"/>
+  <rect x="632" y="234" width="74" height="202" rx="10" fill="#ffc857"/>
+  <path d="M182 288c106-86 181-16 262-54 79-37 121-138 260-96" fill="none" stroke="#2f9c95" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="182" cy="288" r="16" fill="#2f9c95"/>
+  <circle cx="444" cy="234" r="16" fill="#2f9c95"/>
+  <circle cx="704" cy="138" r="16" fill="#2f9c95"/>
+</svg>

@@ -30,16 +30,126 @@
     </header>
 
     <main>
-      <section class="section">
-        <h1>Projects</h1>
-        <p class="placeholder">
-          Cards or case studies outlining project goals, approach, and outcomes will be featured here.
-        </p>
+      <section class="section projects-section">
+        <div class="section-header">
+          <div>
+            <h1>Projects</h1>
+            <p class="section-intro">
+              Selected work across software, data, and applied AI. Replace these placeholders with real project details later.
+            </p>
+          </div>
+
+          <div class="filter-menu">
+            <button class="filter-toggle" type="button" aria-expanded="false" aria-controls="project-filters">
+              Filter
+            </button>
+            <div class="filter-panel" id="project-filters" hidden>
+              <button class="filter-option active" type="button" data-filter="all">All</button>
+              <button class="filter-option" type="button" data-filter="2020">2020</button>
+              <button class="filter-option" type="button" data-filter="2021">2021</button>
+              <button class="filter-option" type="button" data-filter="2023">2023</button>
+              <button class="filter-option" type="button" data-filter="2024">2024</button>
+              <button class="filter-option" type="button" data-filter="Machine Learning">Machine Learning</button>
+              <button class="filter-option" type="button" data-filter="AI Agents">AI Agents</button>
+              <button class="filter-option" type="button" data-filter="Web App">Web App</button>
+              <button class="filter-option" type="button" data-filter="Data Visualization">Data Visualization</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-grid" aria-live="polite">
+          <a class="project-card" href="project-1.html" data-tags="2020 Machine Learning Data Visualization">
+            <img src="assets/project-1.svg" alt="Abstract chart preview for Project 1" />
+            <div class="project-content">
+              <h2>Project 1</h2>
+              <div class="tag-list">
+                <span class="tag">2020</span>
+                <span class="tag">Machine Learning</span>
+                <span class="tag">Data Visualization</span>
+              </div>
+              <p>
+                Placeholder description for a project focused on finding patterns in data and presenting the results clearly.
+              </p>
+            </div>
+          </a>
+
+          <a class="project-card" href="project-2.html" data-tags="2021 Web App Full Stack">
+            <img src="assets/project-2.svg" alt="Abstract interface preview for Project 2" />
+            <div class="project-content">
+              <h2>Project 2</h2>
+              <div class="tag-list">
+                <span class="tag">2021</span>
+                <span class="tag">Web App</span>
+                <span class="tag">Full Stack</span>
+              </div>
+              <p>
+                Placeholder description for a web application with a clean interface, practical workflow, and reusable components.
+              </p>
+            </div>
+          </a>
+
+          <a class="project-card" href="project-3.html" data-tags="2023 AI Agents Automation">
+            <img src="assets/project-3.svg" alt="Abstract node network preview for Project 3" />
+            <div class="project-content">
+              <h2>Project 3</h2>
+              <div class="tag-list">
+                <span class="tag">2023</span>
+                <span class="tag">AI Agents</span>
+                <span class="tag">Automation</span>
+              </div>
+              <p>
+                Placeholder description for an agent-style system that coordinates tools, decisions, and user-facing actions.
+              </p>
+            </div>
+          </a>
+
+          <a class="project-card" href="project-4.html" data-tags="2024 Machine Learning AI Agents">
+            <img src="assets/project-4.svg" alt="Abstract model layers preview for Project 4" />
+            <div class="project-content">
+              <h2>Project 4</h2>
+              <div class="tag-list">
+                <span class="tag">2024</span>
+                <span class="tag">Machine Learning</span>
+                <span class="tag">AI Agents</span>
+              </div>
+              <p>
+                Placeholder description for an applied AI project combining model outputs with a structured product experience.
+              </p>
+            </div>
+          </a>
+        </div>
       </section>
     </main>
 
     <footer>
       Site concept &mdash; last updated October 2025. Content coming soon.
     </footer>
+
+    <script>
+      const filterToggle = document.querySelector(".filter-toggle");
+      const filterPanel = document.querySelector(".filter-panel");
+      const filterOptions = document.querySelectorAll(".filter-option");
+      const projectCards = document.querySelectorAll(".project-card");
+
+      filterToggle.addEventListener("click", () => {
+        const isOpen = filterToggle.getAttribute("aria-expanded") === "true";
+        filterToggle.setAttribute("aria-expanded", String(!isOpen));
+        filterPanel.hidden = isOpen;
+      });
+
+      filterOptions.forEach((option) => {
+        option.addEventListener("click", () => {
+          const selectedTag = option.dataset.filter;
+
+          filterOptions.forEach((item) => item.classList.remove("active"));
+          option.classList.add("active");
+
+          projectCards.forEach((card) => {
+            const matches = selectedTag === "all" || card.dataset.tags.includes(selectedTag);
+            card.hidden = !matches;
+          });
+        });
+      });
+    </script>
   </body>
 </html>

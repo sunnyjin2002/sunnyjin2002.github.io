@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-labelledby="title desc">
+  <title id="title">Project 4 placeholder image</title>
+  <desc id="desc">Abstract layered model visualization.</desc>
+  <rect width="960" height="600" fill="#f5f7fb"/>
+  <rect x="102" y="82" width="756" height="436" rx="34" fill="#ffffff"/>
+  <path d="M214 184h532M214 300h532M214 416h532" stroke="#dce3ee" stroke-width="16" stroke-linecap="round"/>
+  <rect x="198" y="148" width="170" height="72" rx="22" fill="#ff715b"/>
+  <rect x="396" y="148" width="170" height="72" rx="22" fill="#ffc857"/>
+  <rect x="594" y="148" width="170" height="72" rx="22" fill="#2f9c95"/>
+  <rect x="198" y="264" width="170" height="72" rx="22" fill="#1c1f26"/>
+  <rect x="396" y="264" width="170" height="72" rx="22" fill="#ffb199"/>
+  <rect x="594" y="264" width="170" height="72" rx="22" fill="#5f6673"/>
+  <rect x="198" y="380" width="170" height="72" rx="22" fill="#2f9c95"/>
+  <rect x="396" y="380" width="170" height="72" rx="22" fill="#ff715b"/>
+  <rect x="594" y="380" width="170" height="72" rx="22" fill="#ffc857"/>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-labelledby="title desc">
+  <title id="title">Project 3 placeholder image</title>
+  <desc id="desc">Abstract AI agent node network.</desc>
+  <rect width="960" height="600" fill="#f7f5ef"/>
+  <rect x="90" y="72" width="780" height="456" rx="32" fill="#ffffff"/>
+  <path d="M274 300h188M498 232l146-82M498 368l146 82M644 150l82 150M644 450l82-150" stroke="#dce3ee" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="274" cy="300" r="74" fill="#ff715b"/>
+  <circle cx="498" cy="232" r="58" fill="#2f9c95"/>
+  <circle cx="498" cy="368" r="58" fill="#ffc857"/>
+  <circle cx="644" cy="150" r="50" fill="#1c1f26"/>
+  <circle cx="644" cy="450" r="50" fill="#5f6673"/>
+  <circle cx="726" cy="300" r="72" fill="#ffb199"/>
+  <path d="M244 300h60M468 232h60M468 368h60M696 300h60" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
+</svg>
