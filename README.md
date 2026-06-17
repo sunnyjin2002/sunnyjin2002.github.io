@@ -1,9 +1,9 @@
 # Sunny Jin — Personal Site
 
-A personal website to share background, interests, and highlighted projects in a single, easy-to-maintain place.
+This is my personal website to share background, interests, and highlighted projects in a single, easy-to-maintain place.
 
 ## Project Goals
-- Introduce who Sunny is and what drives them.
+- Introduce who I am.
 - Spotlight professional experience, education, and selected achievements.
 - Showcase personal projects with context, visuals, and links to source/live demos.
 - Provide a hub for interests, writing, and ways to get in touch.
@@ -41,6 +41,5 @@ A personal website to share background, interests, and highlighted projects in a
 - Flesh out detailed content outline for each section.
 - Decide on final tech stack (pure static vs. framework).
 - Draft initial copy for About and Experience sections.
-
-## Local Development
-You can open `index.html` directly in a browser for quick previews. Set up a lightweight dev server (e.g., `npx serve .`) for live reload as the site evolves.
+- Pages with links removed, to complete later (for bringing the website online first):
+    - about, interests
