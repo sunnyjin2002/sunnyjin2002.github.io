@@ -1,0 +1,217 @@
+Refactor my personal website timeline section into a data-driven, time-accurate vertical timeline using only HTML, CSS, and vanilla JavaScript.
+
+Current stack:
+- HTML
+- CSS
+- JavaScript
+- No React
+- No timeline library
+
+Goal:
+Create a vertical timeline for my personal website showing both work experience and education. The timeline should have a center vertical line, with education cards on the left and work experience cards on the right. Card positions should be calculated from real dates, not hard-coded with fixed CSS rows or manual placement.
+
+Important requirement:
+Do NOT hard-code card positions using fixed row numbers, fixed grid rows, nth-child selectors, or manual top values. Adding, removing, or editing a timeline item should only require changing the JavaScript data array.
+
+Implement the timeline using this data model:
+
+const timelineItems = [
+  {
+    id: "uoft",
+    type: "education",
+    title: "University of Toronto",
+    subtitle: "BSc in Statistics — Statistical Machine Learning and Data Science Stream",
+    start: "2020-09-01",
+    end: "2025-06-01",
+    side: "left",
+    bullets: [
+      "Major in Statistics, co-op program.",
+      "Focused on statistical machine learning and data science."
+    ]
+  },
+  {
+    id: "xixin",
+    type: "work",
+    title: "XiXin Management Consulting",
+    subtitle: "Shanghai Intern",
+    start: "2022-05-01",
+    end: "2022-08-01",
+    side: "right",
+    bullets: [
+      "Worked on stock trend analysis algorithms and futures quantitative analysis interfaces.",
+      "Processed historical database records using filtering and optimization logic."
+    ]
+  },
+  {
+    id: "govtech-2023",
+    type: "work",
+    title: "GovTechON",
+    subtitle: "Data Analyst Co-op",
+    start: "2023-01-01",
+    end: "2023-08-01",
+    side: "right",
+    bullets: [
+      "Supported Python-based ETL scripts for user-permission data migration.",
+      "Conducted UAT and post-migration validation."
+    ]
+  },
+  {
+    id: "govtech-2024",
+    type: "work",
+    title: "GovTechON",
+    subtitle: "Data Analyst Co-op",
+    start: "2024-05-01",
+    end: "2024-08-01",
+    side: "right",
+    bullets: [
+      "Supported RBAC review, access-log analysis, and BI reporting requirements.",
+      "Prepared technical documentation and KPI reporting requirements."
+    ]
+  },
+  {
+    id: "roamer",
+    type: "work",
+    title: "Roamer Pet Utilities",
+    subtitle: "Analyst, Part-time",
+    start: "2025-10-01",
+    end: null,
+    side: "right",
+    bullets: [
+      "Supported e-commerce sourcing, procurement analysis, and demand planning.",
+      "Built AI-agent and Python analytical modules for historical data analysis and shortage estimation."
+    ]
+  },
+  {
+    id: "freelance-ai",
+    type: "work",
+    title: "AI Document Processing & Production Scheduling",
+    subtitle: "Freelance",
+    start: "2026-05-01",
+    end: "2026-06-01",
+    side: "right",
+    bullets: [
+      "Built a multimodal LLM-based OCR workflow for receipts and invoices.",
+      "Supported production scheduling optimization research for electronic-industry constraints."
+    ]
+  }
+];
+
+Implementation requirements:
+
+1. HTML
+Create or update a section like this:
+
+<section class="timeline-section" id="experience">
+  <h2>Experience & Education</h2>
+
+  <div class="timeline" id="timeline">
+    <div class="timeline-line"></div>
+  </div>
+</section>
+
+Load the JavaScript file after the timeline HTML.
+
+2. JavaScript
+Create a timeline rendering script.
+
+The script should:
+- Store timeline entries in the timelineItems array.
+- Parse ISO date strings into timestamps.
+- Treat null end dates as the current date.
+- Compute the timeline bounds using the earliest start date and the latest end date.
+- For each item, compute an anchor date.
+- Use the midpoint between start and end as the anchor date.
+- Convert the anchor date into a top percentage:
+  topPercent = ((anchorDate - timelineStart) / (timelineEnd - timelineStart)) * 100
+- Sort items chronologically by anchor date.
+- Dynamically create article elements for each timeline card.
+- Apply classes based on side and type:
+  timeline-card
+  timeline-card-left or timeline-card-right
+  timeline-card-education or timeline-card-work
+- Apply the calculated top percentage using inline style:
+  card.style.top = `${topPercent}%`
+- Inject the generated cards into #timeline.
+- Keep the central line as a separate element.
+
+3. CSS
+Style the timeline so that on desktop:
+- The timeline section is centered and max-width constrained.
+- The timeline container has position: relative.
+- The center line is absolutely positioned at left: 50%.
+- Cards are absolutely positioned.
+- Left-side cards are on the left of the center line.
+- Right-side cards are on the right of the center line.
+- Cards are vertically centered on their calculated position using transform: translateY(-50%).
+- Each card has a dot that aligns with the center line.
+- Cards have padding, rounded corners, border, subtle shadow, and readable typography.
+- Education and work cards can have slight visual distinction, but keep the design clean.
+
+4. Mobile responsiveness
+At screen widths below around 768px:
+- Collapse the timeline into a single-column layout.
+- Do not use absolute positioning for cards on mobile.
+- Use normal document flow with flex-column or block layout.
+- Keep the vertical line on the left side.
+- All cards should appear to the right of the line.
+- Sort cards chronologically.
+- Override inline top positioning with top: auto !important.
+- Ensure the timeline remains readable on mobile.
+
+5. Overlap handling
+Start with a simple approach:
+- Use a generous desktop min-height, around 1700px to 1900px.
+- This allows close dates to have enough space.
+- Do not manually hard-code offsets for individual cards.
+- If overlapping still occurs, add a generic collision-avoidance helper, but do not solve overlap by manually assigning row numbers.
+
+6. Code quality
+- Keep the code simple and readable.
+- Use semantic HTML where practical.
+- Do not use external dependencies.
+- Do not use React.
+- Do not use CSS grid row placement for card positions.
+- Do not use hard-coded row numbers.
+- Make it easy to add a new timeline item by editing only the timelineItems array.
+
+7. Suggested functions
+Please implement helper functions similar to these:
+
+function toTime(dateString)
+function getItemEnd(item)
+function getAnchorTime(item)
+function getTimelineBounds(items)
+function getTopPercent(item, bounds)
+function formatDate(dateString)
+function formatDateRange(item)
+function createTimelineCard(item, bounds)
+function renderTimeline()
+
+8. Expected behavior
+When I add a new item like this:
+
+{
+  id: "new-role",
+  type: "work",
+  title: "New Company",
+  subtitle: "Data Analyst",
+  start: "2026-09-01",
+  end: "2027-04-01",
+  side: "right",
+  bullets: [
+    "Analyzed operational data.",
+    "Built reporting automation."
+  ]
+}
+
+The timeline should automatically:
+- Recalculate the full date range.
+- Recalculate all card positions.
+- Place the new card according to its actual dates.
+- Require no CSS row changes or manual positioning.
+
+Deliverables:
+- Updated HTML section.
+- CSS for the timeline.
+- JavaScript timeline renderer.
+- Brief comments explaining the date-position calculation.
